@@ -9,8 +9,8 @@
 // Each enumerated device becomes `new MediaDevice(d)` whose `.isValid` / `.isSuspicious` are computed
 // from its label via FCN; the app then filters out anything invalid and errors with "you denied
 // access to your devices". Labels are NEVER sent to the server (WebRTC doesn't transmit track
-// labels, and FCN just throws locally), so neutralizing FCN lets the *real* device names through —
-// no renaming, no spoofed enumerateDevices.
+// labels, and FCN just throws locally), so neutralizing FCN lets the *real* device names through,
+// with no renaming and no spoofed enumerateDevices.
 //
 // FCN is assigned once, after our document-start hook runs, via `window.FCN = <fn>`. We install an
 // accessor on `window.FCN` up front so we can rewrite its two methods the instant ome.tv defines it
@@ -22,7 +22,7 @@ const log = (...a) => DEBUG && console.log('[OmeTV Unblock]', ...a);
 const alwaysValid = () => true;
 const neverSuspicious = () => false;
 
-// Replace FCN's verdict methods so every device — whatever its real label — passes.
+// Replace FCN's verdict methods so every device, whatever its real label, passes.
 function neutralize(fcn) {
   if (!fcn || (typeof fcn !== 'function' && typeof fcn !== 'object')) return fcn;
   if (fcn.__omeUnblocked) return fcn;
@@ -57,7 +57,7 @@ function neutralize(fcn) {
 // ManyCam is the one virtual cam FCN can't cover: ome.tv has a separate hard-coded client throw,
 // `M(label)`, that fires when a *track* label contains "manycam". M is a private closure, so the only
 // lever is the track-label string it reads. We override MediaStreamTrack.prototype.label to strip
-// "manycam" — but only for labels that actually contain it, leaving every other device untouched. The
+// "manycam", but only for labels that actually contain it, leaving every other device untouched. The
 // device picker reads MediaDeviceInfo (enumerateDevices), not track labels, so the real "ManyCam …"
 // name still shows in the dropdown; only the internal string M inspects is sanitized. Living on the
 // track prototype, this also survives ome.tv swapping out navigator.mediaDevices.
@@ -98,7 +98,7 @@ export function installShim() {
     });
     log('FCN interceptor installed at document-start');
   } catch (e) {
-    // Property not redefinable — retry neutralizing on a short poll until FCN appears.
+    // Property not redefinable, retry neutralizing on a short poll until FCN appears.
     let tries = 0;
     const id = setInterval(() => {
       if (window.FCN) {
