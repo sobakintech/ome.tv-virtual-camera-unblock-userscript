@@ -7,6 +7,12 @@ no renaming and no fake webcam.
 Works with OBS Virtual Camera, DroidCam, NVIDIA Broadcast, XSplit, Snap Camera, ManyCam, and most
 others.
 
+> [!WARNING]
+> **Never click Start while your virtual camera is off** (e.g. OBS showing its default placeholder:
+> the OBS logo on a dark blue background with a crossed-out camera icon beneath it). ome.tv treats
+> that static placeholder feed as fake and **instantly bans your account.** Always start the virtual
+> camera and confirm it's showing a live image *before* you connect.
+
 ## Install
 
 **1. Get a userscript manager.** You need one browser extension to run the script:
