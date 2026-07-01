@@ -7,8 +7,10 @@ against ~75 known virtual-cam names/regexes. This userscript intercepts `window.
 `document-start` and neutralizes those two methods, bypassing the check **at the root** — so your real
 device names (e.g. "OBS Virtual Camera") pass through unchanged, with no renaming or stream spoofing.
 
-> Known limitation: labels containing `manycam` hit a separate hard-coded client throw that isn't
-> reachable through `FCN`; ManyCam is the one virtual cam this can't unblock without renaming it.
+ManyCam is a special case: ome.tv has a separate hard-coded client throw that fires when a *track*
+label contains `manycam`, unreachable through `FCN`. For that one cam we sanitize only the internal
+track-label string it inspects (via `MediaStreamTrack.prototype.label`); the device picker reads
+`enumerateDevices`, so the real "ManyCam …" name still shows in the dropdown.
 
 Built with [Vite](https://vitejs.dev) + [vite-plugin-monkey](https://github.com/lisonge/vite-plugin-monkey)
 (HMR while you develop) and Bun.

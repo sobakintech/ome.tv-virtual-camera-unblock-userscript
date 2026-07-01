@@ -54,7 +54,33 @@ function neutralize(fcn) {
   return fcn;
 }
 
+// ManyCam is the one virtual cam FCN can't cover: ome.tv has a separate hard-coded client throw,
+// `M(label)`, that fires when a *track* label contains "manycam". M is a private closure, so the only
+// lever is the track-label string it reads. We override MediaStreamTrack.prototype.label to strip
+// "manycam" — but only for labels that actually contain it, leaving every other device untouched. The
+// device picker reads MediaDeviceInfo (enumerateDevices), not track labels, so the real "ManyCam …"
+// name still shows in the dropdown; only the internal string M inspects is sanitized. Living on the
+// track prototype, this also survives ome.tv swapping out navigator.mediaDevices.
+function patchManyCamLabel() {
+  const proto = window.MediaStreamTrack && window.MediaStreamTrack.prototype;
+  if (!proto) return;
+  const desc = Object.getOwnPropertyDescriptor(proto, 'label');
+  if (!desc || !desc.get || desc.get.__omeManyCam || !desc.configurable) return;
+  const realGet = desc.get;
+  const get = function () {
+    const label = realGet.call(this);
+    return typeof label === 'string' && /manycam/i.test(label)
+      ? label.replace(/manycam/gi, 'Camera')
+      : label;
+  };
+  get.__omeManyCam = true;
+  Object.defineProperty(proto, 'label', { ...desc, get });
+  log('ManyCam track-label sanitizer installed');
+}
+
 export function installShim() {
+  patchManyCamLabel();
+
   // If FCN is somehow already present (e.g. hot reload after the app booted), patch it now.
   if (window.FCN) neutralize(window.FCN);
 
