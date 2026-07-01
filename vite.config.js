@@ -5,6 +5,9 @@ const REPO = 'sobakintech/ome.tv-userscript';
 const FILE = 'ometv-unblock.user.js';
 const releaseAsset = `https://github.com/${REPO}/releases/latest/download/${FILE}`;
 
+// Version comes from the release tag (e.g. tag `v2` -> `2`); non-release builds are 0.0.0.
+const VERSION = process.env.VERSION || '0.0.0';
+
 export default defineConfig({
   server: {
     port: 3000,
@@ -14,6 +17,7 @@ export default defineConfig({
       entry: 'src/main.js',
       userscript: {
         name: 'OmeTV Virtual Camera Unblock',
+        version: VERSION,
         namespace: 'sobakintech',
         description:
           'Make OBS/virtual cameras work on ome.tv by neutralizing its client-side virtual-camera check at the root (keeps real device names).',
