@@ -1,25 +1,27 @@
 # OmeTV Virtual Camera Unblock
 
-Userscript that makes OBS / virtual cameras usable on [ome.tv](https://ome.tv). ome.tv accepts the
-stream then rejects it for looking virtual. Its detection is entirely client-side and funnels through
-one global — `window.FCN.isValid(label)` / `.isSuspicious(label)`, which match the device label
-against ~75 known virtual-cam names/regexes. This userscript intercepts `window.FCN` at
-`document-start` and neutralizes those two methods, bypassing the check **at the root** — so your real
-device names (e.g. "OBS Virtual Camera") pass through unchanged, with no renaming or stream spoofing.
+A userscript that lets you use OBS and other virtual cameras on [ome.tv](https://ome.tv), which
+normally rejects them as "virtual" and blocks your camera. Your real device names are kept as-is, with
+no renaming and no fake webcam.
 
-ManyCam is a special case: ome.tv has a separate hard-coded client throw that fires when a *track*
-label contains `manycam`, unreachable through `FCN`. For that one cam we sanitize only the internal
-track-label string it inspects (via `MediaStreamTrack.prototype.label`); the device picker reads
-`enumerateDevices`, so the real "ManyCam …" name still shows in the dropdown.
+Works with OBS Virtual Camera, DroidCam, NVIDIA Broadcast, XSplit, Snap Camera, ManyCam, and most
+others.
 
-Built with [Vite](https://vitejs.dev) + [vite-plugin-monkey](https://github.com/lisonge/vite-plugin-monkey)
-(HMR while you develop) and Bun.
+## Install
 
-## Install (users)
+**1. Get a userscript manager.** You need one browser extension to run the script:
 
-Grab the latest build from [Releases](https://github.com/sobakintech/ome.tv-userscript/releases/latest)
-and open `ometv-unblock.user.js` — Tampermonkey / Violentmonkey will offer to install it. Updates are
-delivered automatically via `@updateURL`.
+- **Chrome / Brave:** use **[Tampermonkey](https://www.tampermonkey.net/)**. (Violentmonkey no longer
+  runs here since Chrome removed Manifest V2 support in mid-2025.)
+- **Edge:** use **[Violentmonkey](https://microsoftedge.microsoft.com/addons/detail/eeagobfjdenkkddmbclomhiblgggliao)**
+  (free and open source, still supported on Edge) or Tampermonkey.
+- **Firefox:** use **[Violentmonkey](https://addons.mozilla.org/firefox/addon/violentmonkey/)** or
+  Tampermonkey.
+
+**2. Install the script.** Open
+[ometv-unblock.user.js](https://github.com/sobakintech/ome.tv-userscript/releases/latest/download/ometv-unblock.user.js)
+(latest release). Your userscript manager will show its install page, where you click **Install**.
+Updates then arrive automatically.
 
 ## Develop (hot reload)
 
@@ -28,21 +30,14 @@ bun install
 bun run dev
 ```
 
-vite-plugin-monkey serves a **dev loader userscript** on `http://localhost:3000`. Install that loader
-**once** in Tampermonkey / Violentmonkey (open the URL the dev server prints). From then on, editing
-anything under `src/` hot-reloads on ome.tv — just keep the tab open, no reinstalling.
-
-- Entry: `src/main.js` → `installShim()`
-- The `FCN` interception lives in `src/shim.js`.
-- Set `DEBUG = true` in `src/shim.js` to log when `FCN` is intercepted/neutralized.
-
-> Note: the patch must land before ome.tv's bundle captures its `getUserMedia` reference, so it runs
-> at `document-start`. If a change ever seems to not take effect, hard-reload the ome.tv tab.
+vite-plugin-monkey serves a dev loader userscript on `http://localhost:3000`. Install that loader once
+in Tampermonkey or Violentmonkey (open the URL the dev server prints). After that, editing anything
+under `src/` hot-reloads on ome.tv. Just keep the tab open, no reinstalling.
 
 ## Build
 
 ```bash
-bun run build      # -> dist/ometv-unblock.user.js  (+ .meta.js)
+bun run build      # outputs dist/ometv-unblock.user.js (+ .meta.js)
 ```
 
 ## Release
@@ -51,9 +46,26 @@ CI (`.github/workflows/release.yml`) builds and publishes the userscript as a re
 `v*` tag is pushed:
 
 ```bash
-git tag v2.0.0
-git push origin v2.0.0
+git tag v1.2.0
+git push origin v1.2.0
 ```
 
-The release asset feeds `@downloadURL` / `@updateURL`, so installed copies auto-update. Metadata (name,
-match, version, URLs) is defined once in `vite.config.js`; `version` comes from `package.json`.
+The release asset feeds `@downloadURL` and `@updateURL`, so installed copies auto-update. Metadata
+(name, match, version, URLs) is defined once in `vite.config.js`; `version` comes from `package.json`.
+
+## How it works
+
+ome.tv's virtual-camera detection is entirely client-side. It funnels through one global,
+`window.FCN`, whose `isValid(label)` and `isSuspicious(label)` methods match the device label against
+about 75 known virtual-cam names and regexes. This userscript intercepts `window.FCN` at
+`document-start` and neutralizes those two methods, so every device passes with its real name.
+
+ManyCam is a special case. ome.tv has a separate hard-coded check that fires when a track label
+contains `manycam`, which `FCN` doesn't cover. For that one camera we sanitize only the internal
+track-label string it inspects (via `MediaStreamTrack.prototype.label`). The device picker reads
+`enumerateDevices`, so the real "ManyCam" name still shows in the dropdown.
+
+Built with Vite, vite-plugin-monkey (HMR), and Bun. Entry is `src/main.js`; the interception logic
+lives in `src/shim.js`. Set `DEBUG = true` in `src/shim.js` to log when the checks are intercepted.
+The patch must run before ome.tv captures its `getUserMedia` reference, hence `document-start`; if a
+change ever seems not to take effect, hard-reload the tab.
