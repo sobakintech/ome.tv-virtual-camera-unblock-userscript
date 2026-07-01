@@ -75,3 +75,9 @@ Built with Vite, vite-plugin-monkey (HMR), and Bun. Entry is `src/main.js`; the 
 lives in `src/shim.js`. Set `DEBUG = true` in `src/shim.js` to log when the checks are intercepted.
 The patch must run before ome.tv captures its `getUserMedia` reference, hence `document-start`; if a
 change ever seems not to take effect, hard-reload the tab.
+
+## Disclaimer
+
+This userscript is provided as-is, for educational purposes, with no warranty. You use it at your own
+risk. I am **not responsible for any consequences to your account**, including bans, suspensions, or
+any other action taken by ome.tv as a result of using this script.
