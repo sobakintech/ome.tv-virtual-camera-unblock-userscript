@@ -20,7 +20,7 @@ export default defineConfig({
         version: VERSION,
         namespace: 'sobakintech',
         description:
-          'Make OBS/virtual cameras work on ome.tv by neutralizing its client-side virtual-camera check at the root (keeps real device names).',
+          'Use OBS and other virtual cameras on ome.tv without getting blocked.',
         author: 'sobakintech',
         match: ['*://ome.tv/*', '*://*.ome.tv/*'],
         'run-at': 'document-start',
