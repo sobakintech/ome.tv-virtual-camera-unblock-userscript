@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import monkey from 'vite-plugin-monkey';
 
-const REPO = 'sobakintech/ome.tv-userscript';
+const REPO = 'sobakintech/ome.tv-virtual-camera-unblock-userscript';
 const FILE = 'ometv-unblock.user.js';
 const releaseAsset = `https://github.com/${REPO}/releases/latest/download/${FILE}`;
 

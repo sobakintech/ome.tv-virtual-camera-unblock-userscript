@@ -25,7 +25,7 @@ others.
   Tampermonkey.
 
 **2. Install the script.** Open
-[ometv-unblock.user.js](https://github.com/sobakintech/ome.tv-userscript/releases/latest/download/ometv-unblock.user.js)
+[ometv-unblock.user.js](https://github.com/sobakintech/ome.tv-virtual-camera-unblock-userscript/releases/latest/download/ometv-unblock.user.js)
 (latest release). Your userscript manager will show its install page, where you click **Install**.
 Updates then arrive automatically.
 
