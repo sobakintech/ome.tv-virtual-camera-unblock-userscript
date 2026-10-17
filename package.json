@@ -1,5 +1,6 @@
 {
   "name": "ometv-unblock",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "scripts": {

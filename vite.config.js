@@ -22,6 +22,7 @@ export default defineConfig({
         description:
           'Use OBS and other virtual cameras on ome.tv without getting blocked.',
         author: 'sobakintech',
+        license: 'MIT',
         match: ['*://ome.tv/*', '*://*.ome.tv/*'],
         'run-at': 'document-start',
         grant: 'none',
